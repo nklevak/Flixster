@@ -1,6 +1,7 @@
 package com.example.flixster;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.flixster.models.Config;
 import com.example.flixster.models.Movie;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -95,7 +98,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     // create viewholder as static inner class
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         // declare variables to represent view objects
         ImageView ivPosterImage;
@@ -106,6 +109,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         // this constructor has to be implemented because it matches superclass
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             // ivPosterImage is null when in landscape, and vice versa for ivBackdropImage
             // since we reused the same id for tvOverview and tvTitle, they're never null
             // find objects by id
@@ -113,6 +117,23 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             ivBackdropImage = itemView.findViewById(R.id.ivBackdropImage);
             tvOverview = itemView.findViewById(R.id.tvOverview);
             tvTitle = itemView.findViewById(R.id.tvTitle);
+        }
+
+        @Override
+        public void onClick(View view) {
+            // get and validate position
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                // get movie at click position
+                Movie movie = movies.get(position);
+                // create an intent to display the additional info activity
+                // an intent sends out a broadcast that you want something from a different part of the app
+                Intent intent = new Intent(context, com.example.flixster.MovieDetailsActivity.class);
+                // .putExtra() sends additional data with the intent
+                intent.putExtra(Movie.class.getSimpleName(), Parcels.wrap(movie));
+                // starts activity
+                context.startActivity(intent);
+            }
         }
     }
 }
